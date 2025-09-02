@@ -37,6 +37,14 @@ const InstructorDashboard = () => {
     }
   }, [auth, instructorId]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (instructorId) {
+      fetchCourses();
+      fetchCategories();
+    }
+  }, [instructorId]);
+
   const fetchCourses = () => {
     axiosInstance
       .get(`/api/courses/instructor/${instructorId}`)
