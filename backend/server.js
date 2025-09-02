@@ -135,11 +135,15 @@ async function sendEnrollmentEmail(toEmail, courseIds) {
 
 app.use(
   cors({
-    origin: "https://learning-platform12.netlify.app/",
+    origin: [
+      "http://localhost:3000",
+      "https://learning-platform12.netlify.app",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
+
 
 app.use(express.json());
 app.use("/admin", authenticateToken, adminRoutes);
