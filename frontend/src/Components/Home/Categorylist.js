@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
-import "./HomePage.css"; 
+import "./HomePage.css";
 
 function HomePage() {
   const [categories, setCategories] = useState([]);
-  const location = useLocation(); 
+  const location = useLocation();
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/categories")
+      .get("https://e-learning-platform-7wzv.onrender.com/categories")
       .then((response) => {
         setCategories(response.data);
       })
@@ -18,7 +18,6 @@ function HomePage() {
       });
   }, []);
 
- 
   const isActiveCategory = (categoryId) => {
     return location.pathname.includes(`/category/${categoryId}`);
   };
@@ -30,7 +29,9 @@ function HomePage() {
           <Link
             key={category.category_id}
             to={`/category/${category.category_id}`}
-            className={`category-button ${isActiveCategory(category.category_id) ? "active" : ""}`}
+            className={`category-button ${
+              isActiveCategory(category.category_id) ? "active" : ""
+            }`}
           >
             <div className="category-text">{category.name}</div>
           </Link>

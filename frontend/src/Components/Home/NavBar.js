@@ -31,7 +31,9 @@ const Navbar = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/categories");
+        const response = await axios.get(
+          "https://e-learning-platform-7wzv.onrender.com/categories"
+        );
         setCategories(response.data);
       } catch (error) {
         console.error("Error fetching categories:", error.message);
@@ -46,7 +48,7 @@ const Navbar = () => {
       if (auth?.user) {
         try {
           const response = await axios.get(
-            `http://localhost:8080/api/cart/count/${auth.user.user_id}`
+            `https://e-learning-platform-7wzv.onrender.com/api/cart/count/${auth.user.user_id}`
           );
           updateCartCount(response.data.count || 0); // Update cart count
         } catch (error) {
@@ -64,7 +66,7 @@ const Navbar = () => {
       if (auth?.user) {
         try {
           const response = await axios.get(
-            `http://localhost:8080/api/wishlist/count/${auth.user.user_id}`
+            `https://e-learning-platform-7wzv.onrender.com/api/wishlist/count/${auth.user.user_id}`
           );
           updateWishlistCount(response.data.wishlist_count || 0);
           // console.log(response);
@@ -89,7 +91,7 @@ const Navbar = () => {
     if (searchTerm.trim()) {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/search?keyword=${encodeURIComponent(
+          `https://e-learning-platform-7wzv.onrender.com/api/search?keyword=${encodeURIComponent(
             searchTerm
           )}`
         );
@@ -220,7 +222,7 @@ const Navbar = () => {
 
           {userRole === "admin" && (
             <>
-            <NavLink to="/student-dashboard" className="nav-link">
+              <NavLink to="/student-dashboard" className="nav-link">
                 My <br />
                 Courses
               </NavLink>

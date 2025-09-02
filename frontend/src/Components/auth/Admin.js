@@ -47,12 +47,15 @@ const Admin = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:8080/auth/register", {
-        full_name,
-        email,
-        password,
-        role,
-      });
+      const response = await axios.post(
+        "https://e-learning-platform-7wzv.onrender.com/auth/register",
+        {
+          full_name,
+          email,
+          password,
+          role,
+        }
+      );
       setStep(2);
       setSuccessMessage(
         "Registration successful! Email sent for verification."
@@ -73,11 +76,11 @@ const Admin = () => {
     setSuccessMessage("");
     const otpValue = otp.join("");
 
-    setLoading(true); 
+    setLoading(true);
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/auth/verify-otp",
+        "https://e-learning-platform-7wzv.onrender.com/auth/verify-otp",
         {
           email,
           otp: otpValue,
@@ -90,7 +93,7 @@ const Admin = () => {
         error.response?.data?.message || "Invalid OTP, please try again."
       );
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -133,115 +136,119 @@ const Admin = () => {
 
   return (
     <>
-    <Navbar/>
+      <Navbar />
       <div className="main_admin">
-      {step === 1 ? (
-        <form onSubmit={handleadmin} className="admin_form">
-          <img src="sdfsfd" alt="logo" className="admin_promo" />
-          <h1>admin</h1>
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={full_name}
-            onChange={(e) => setFullName(e.target.value)}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="student">Student</option>
-            <option value="instructor">Instructor</option>
-          </select>
-          <button disabled={loading}>
-            {loading ? "admining..." : "admin"}
-          </button>
-          {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-          <p className="forgot">
-            Already have an account?{" "}
-            <button
-              onClick={navigateToadmin}
-              style={{
-                background: "none",
-                border: "none",
-                color: "blue",
-                textDecoration: "underline",
-                cursor: "pointer",
-              }}
-            >
-              Log in
+        {step === 1 ? (
+          <form onSubmit={handleadmin} className="admin_form">
+            <img src="sdfsfd" alt="logo" className="admin_promo" />
+            <h1>admin</h1>
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={full_name}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <select value={role} onChange={(e) => setRole(e.target.value)}>
+              <option value="student">Student</option>
+              <option value="instructor">Instructor</option>
+            </select>
+            <button disabled={loading}>
+              {loading ? "admining..." : "admin"}
             </button>
-          </p>
-        </form>
-      ) : (
-        <form onSubmit={handleOtpVerify} className="otp-section">
-          <div>
-            <label className="OTP_text">Verify with OTP</label>
-            <div
-              style={{ display: "flex", justifyContent: "center", gap: "10px" }}
-            >
-              {otp.map((value, index) => (
-                <input
-                  key={index}
-                  type="text"
-                  maxLength="1"
-                  value={value}
-                  onChange={(e) => handleChange(e, index)}
-                  onKeyDown={(e) => handleBackspace(e, index)}
-                  ref={inputRefs.current[index]}
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    textAlign: "center",
-                    fontSize: "20px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                  }}
-                />
-              ))}
-            </div>
-          </div>
-
-          <div style={{ marginTop: "20px" }}>
-            {resendTimer > 0 ? (
-              <p>
-                Resend OTP in:{" "}
-                <strong>
-                  00:{resendTimer < 10 ? `0${resendTimer}` : resendTimer}
-                </strong>
-              </p>
-            ) : (
+            {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+            <p className="forgot">
+              Already have an account?{" "}
               <button
-                type="button"
-                onClick={() => setResendTimer(30)}
-                className="resent_btn"
+                onClick={navigateToadmin}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "blue",
+                  textDecoration: "underline",
+                  cursor: "pointer",
+                }}
               >
-                Resend OTP
+                Log in
               </button>
-            )}
-          </div>
+            </p>
+          </form>
+        ) : (
+          <form onSubmit={handleOtpVerify} className="otp-section">
+            <div>
+              <label className="OTP_text">Verify with OTP</label>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "10px",
+                }}
+              >
+                {otp.map((value, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    maxLength="1"
+                    value={value}
+                    onChange={(e) => handleChange(e, index)}
+                    onKeyDown={(e) => handleBackspace(e, index)}
+                    ref={inputRefs.current[index]}
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      textAlign: "center",
+                      fontSize: "20px",
+                      border: "1px solid #ccc",
+                      borderRadius: "4px",
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
 
-          {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-          {successMessage && (
-            <p style={{ color: "green", margin: "5px" }}>{successMessage}</p>
-          )}
-          <button type="submit" className="adminbtn" disabled={loading}>
-            {loading ? "Verifying..." : "Verify OTP"}
-          </button>
-        </form>
-      )}
-    </div>
+            <div style={{ marginTop: "20px" }}>
+              {resendTimer > 0 ? (
+                <p>
+                  Resend OTP in:{" "}
+                  <strong>
+                    00:{resendTimer < 10 ? `0${resendTimer}` : resendTimer}
+                  </strong>
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setResendTimer(30)}
+                  className="resent_btn"
+                >
+                  Resend OTP
+                </button>
+              )}
+            </div>
+
+            {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
+            {successMessage && (
+              <p style={{ color: "green", margin: "5px" }}>{successMessage}</p>
+            )}
+            <button type="submit" className="adminbtn" disabled={loading}>
+              {loading ? "Verifying..." : "Verify OTP"}
+            </button>
+          </form>
+        )}
+      </div>
     </>
   );
 };

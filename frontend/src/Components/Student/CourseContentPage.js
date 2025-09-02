@@ -29,7 +29,7 @@ const CourseContentPage = () => {
       try {
         const token = auth?.token;
         const response = await axios.get(
-          `http://localhost:8080/api/content/enrolled/${courseId}`,
+          `https://e-learning-platform-7wzv.onrender.com/api/content/enrolled/${courseId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -53,7 +53,7 @@ const CourseContentPage = () => {
       try {
         const token = auth.token;
         const response = await axios.get(
-          `http://localhost:8080/api/video/track/${auth.user.user_id}/${courseId}`,
+          `https://e-learning-platform-7wzv.onrender.com/api/video/track/${auth.user.user_id}/${courseId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -86,7 +86,7 @@ const CourseContentPage = () => {
 
       try {
         const response = await axios.post(
-          "http://localhost:8080/api/check-completion",
+          "https://e-learning-platform-7wzv.onrender.com/api/check-completion",
           {
             userId: auth.user.user_id,
             courseId,
@@ -148,7 +148,7 @@ const CourseContentPage = () => {
     try {
       const token = auth.token;
       await axios.post(
-        "http://localhost:8080/api/video/track",
+        "https://e-learning-platform-7wzv.onrender.com/api/video/track",
         {
           userId: auth.user.user_id,
           courseId,

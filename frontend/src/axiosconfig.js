@@ -1,7 +1,7 @@
-import axios from 'axios';
+import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: "https://e-learning-platform-7wzv.onrender.com",
 });
 
 // Automatically add the token to all requests if it exists in localStorage

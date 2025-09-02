@@ -14,7 +14,9 @@ const HomePage = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/api/courses/category/1`)
+      .get(
+        `https://e-learning-platform-7wzv.onrender.com/api/courses/category/1`
+      )
       .then((response) => {
         setCourses(response.data);
       })

@@ -1,29 +1,32 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ResetPasswordPage = () => {
-  const [email, setEmail] = useState('');
-  const [token, setToken] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [message, setMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [token, setToken] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8080/auth/reset-password', {
-        email,
-        token,
-        newPassword,
-      });
+      const response = await axios.post(
+        "https://e-learning-platform-7wzv.onrender.com/auth/reset-password",
+        {
+          email,
+          token,
+          newPassword,
+        }
+      );
       setMessage(response.data.message);
-      setErrorMessage('');
-      navigate('/login'); 
+      setErrorMessage("");
+      navigate("/login");
     } catch (error) {
-      setErrorMessage(error.response?.data?.message || 'An error occurred');
-      setMessage('');
+      setErrorMessage(error.response?.data?.message || "An error occurred");
+      setMessage("");
     }
   };
 
@@ -54,8 +57,8 @@ const ResetPasswordPage = () => {
         />
         <button type="submit">Reset Password</button>
       </form>
-      {message && <p style={{ color: 'green' }}>{message}</p>}
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+      {message && <p style={{ color: "green" }}>{message}</p>}
+      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
     </div>
   );
 };
