@@ -22,7 +22,7 @@ import uploadImageRouter from "./routes/upload.js";
 import search from "./routes/SearchRoute.js";
 import vediotrack from "./routes/vedioTrack.js";
 import certificateRoute from "./routes/certificateRoute.js";
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 dotenv.config();
 
 const app = express();
@@ -111,7 +111,10 @@ async function sendEnrollmentEmail(toEmail, courseIds) {
   
         <h4>🧠 Course(s) Enrolled:</h4>
         <ul>
-          ${courseIds.split(',').map(id => `<li>Course ID: <strong>${id.trim()}</strong></li>`).join('')}
+          ${courseIds
+            .split(",")
+            .map((id) => `<li>Course ID: <strong>${id.trim()}</strong></li>`)
+            .join("")}
         </ul>
   
         <p>You can now access your enrolled courses in your dashboard.</p>
@@ -121,7 +124,6 @@ async function sendEnrollmentEmail(toEmail, courseIds) {
       </div>
     `,
   };
-  
 
   try {
     await transporter.sendMail(mailOptions);
@@ -130,7 +132,6 @@ async function sendEnrollmentEmail(toEmail, courseIds) {
     console.error("Error sending email:", error);
   }
 }
-
 
 app.use(
   cors({
@@ -151,10 +152,10 @@ app.use("/api", reviewRoutes);
 app.use("/api", wishlistRoutes);
 app.use("/api", cartRoutes);
 app.use("/api", search);
-app.use("/api",vediotrack);
+app.use("/api", vediotrack);
 app.use("/api/upload", uploadRouter);
 app.use("/api/upload-image", uploadImageRouter);
-app.use("/api/pdfupload",pdfupload);
+app.use("/api/pdfupload", pdfupload);
 app.get("/profile", authenticateToken, (req, res) => {
   res.json({ message: "This is a protected route", user: req.user });
 });
@@ -180,8 +181,9 @@ app.post("/create-checkout-session", async (req, res) => {
       })),
       mode: "payment",
       billing_address_collection: "required",
-      success_url: "http://localhost:3000/success",
-      cancel_url: "http://localhost:3000/cancel",
+      success_url:
+        "https://e-learning-platform-ashy.vercel.app/register/success",
+      cancel_url: "https://e-learning-platform-ashy.vercel.app/register/cancel",
       metadata: { userId, courseIds }, // Pass courseIds here
     });
 
