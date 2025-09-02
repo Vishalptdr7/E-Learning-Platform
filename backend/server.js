@@ -137,7 +137,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://learning-platform12.netlify.app",
+      "https://darling-lolly-66830c.netlify.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
