@@ -134,7 +134,7 @@ async function sendEnrollmentEmail(toEmail, courseIds) {
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://learning-platform12.netlify.app/",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
