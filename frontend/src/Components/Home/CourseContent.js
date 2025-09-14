@@ -34,9 +34,7 @@ const CourseContent = () => {
     const token = auth?.token;
 
     axios
-      .get(
-        `https://e-learning-platform-7wzv.onrender.com/api/courses/${courseId}`
-      )
+      .get(`http://localhost:8080/api/courses/${courseId}`)
       .then((response) => {
         console.log("Course Details Response j:", response.data);
         setCourseDetails(response.data);
@@ -240,7 +238,7 @@ const CourseContent = () => {
     if (auth?.user) {
       try {
         const response = await axios.get(
-          `https://e-learning-platform-7wzv.onrender.com/api/cart/count/${auth.user.user_id}`
+          `http://localhost:8080/api/cart/count/${auth.user.user_id}`
         );
         updateCartCount(response.data.count || 0); // Update cart count
       } catch (error) {
@@ -255,7 +253,7 @@ const CourseContent = () => {
     if (auth?.user) {
       try {
         const response = await axios.get(
-          `https://e-learning-platform-7wzv.onrender.com/api/wishlist/count/${auth.user.user_id}`
+          `http://localhost:8080/api/wishlist/count/${auth.user.user_id}`
         );
         updateWishlistCount(response.data.wishlist_count || 0); // Update cart count
       } catch (error) {

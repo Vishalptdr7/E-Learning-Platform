@@ -18,7 +18,7 @@ const ForgotPasswordPage = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://e-learning-platform-7wzv.onrender.com/auth/forgot-password",
+        "http://localhost:8080/auth/forgot-password",
         { email }
       );
       setMessage(response.data.message);
@@ -34,7 +34,7 @@ const ForgotPasswordPage = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "https://e-learning-platform-7wzv.onrender.com/auth/reset-password",
+        "http://localhost:8080/auth/reset-password",
         {
           email,
           token,

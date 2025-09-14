@@ -2,7 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import { authenticateToken } from "./middleware/authenticateToken.js";
-import { testConnection } from "./db.js";
+import { testConnection, promisePool } from "./db.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import categoryRoute from "./routes/categoryRoute.js";
 import courseRoutes from "./routes/courseRoute.js";
@@ -14,7 +14,6 @@ import cartRoutes from "./routes/cartRoute.js";
 import cors from "cors";
 import Stripe from "stripe";
 import bodyParser from "body-parser";
-import { promisePool } from "./db.js";
 import uploadRouter from "./routes/uploadRoute.js";
 import pdfupload from "./routes/pdfupload.js";
 import { clearCart } from "./Controllers/cartController.js";
@@ -23,14 +22,18 @@ import search from "./routes/SearchRoute.js";
 import vediotrack from "./routes/vedioTrack.js";
 import certificateRoute from "./routes/certificateRoute.js";
 import nodemailer from "nodemailer";
+
+// Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+
+// Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SERVER_SECRET_KEY);
 const endpointSecret = process.env.ENDPOINT_SECRET;
 
-// Ensure the webhook route is defined before body-parser middleware
+// Stripe Webhook Handler
 app.post(
   "/webhook",
   bodyParser.raw({ type: "application/json" }),
@@ -48,41 +51,31 @@ app.post(
     if (event.type === "checkout.session.completed") {
       const session = event.data.object;
       console.log("Webhook received session:", session);
-      const userId = session.metadata.userId;
-      const courseIds = session.metadata.courseIds;
 
-      console.log("Received Course IDs:", courseIds);
-      console.log("User ID:", userId);
+      const userId = session.metadata?.userId;
+      const courseIds = session.metadata?.courseIds;
 
-      if (courseIds) {
+      if (!userId || !courseIds) {
+        console.error("Missing metadata in session:", session.metadata);
+        return res.status(400).send("Missing metadata");
+      }
+
+      try {
         const courseIdArray = courseIds.split(",").filter(Boolean);
-        try {
-          for (const courseId of courseIdArray) {
-            await enrollUserInCourse(userId, courseId);
-            console.log(
-              `User ${userId} successfully enrolled in course ${courseId}`
-            );
-          }
-
-          // Clear the user's cart after successful payment
-          await clearCart(userId); // Pass only the userId
-          console.log(`Cart cleared for user ${userId}`);
-          await sendEnrollmentEmail("monumeena0112@gmail.com", courseIds);
-          console.log("Enrollment email sent successfully!");
-          res
-            .status(200)
-            .send("User successfully enrolled in all courses and cart cleared");
-        } catch (error) {
-          console.error(
-            "Error enrolling user in courses or clearing cart:",
-            error
-          );
-          res
-            .status(500)
-            .send("Error enrolling user in courses or clearing cart");
+        for (const courseId of courseIdArray) {
+          await enrollUserInCourse(userId, courseId);
+          console.log(`User ${userId} enrolled in course ${courseId}`);
         }
-      } else {
-        res.status(400).send("No course IDs found in metadata");
+        await clearCart(userId);
+        console.log(`Cart cleared for user ${userId}`);
+
+        await sendEnrollmentEmail("monumeena0112@gmail.com", courseIds);
+        console.log("Enrollment email sent successfully");
+
+        res.status(200).send("Enrollment processed successfully");
+      } catch (error) {
+        console.error("Error processing webhook:", error);
+        res.status(500).send("Server error");
       }
     } else {
       res.status(400).end();
@@ -90,6 +83,7 @@ app.post(
   }
 );
 
+// Send Enrollment Email
 async function sendEnrollmentEmail(toEmail, courseIds) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -107,8 +101,7 @@ async function sendEnrollmentEmail(toEmail, courseIds) {
       <div style="font-family: Arial, sans-serif; line-height: 1.6;">
         <h2 style="color: #4CAF50;">Course Enrollment Confirmation</h2>
         <p>Hi there,</p>
-        <p>Thank you for enrolling in our course(s)! We're excited to have you with us and hope you enjoy your learning journey.</p>
-  
+        <p>Thank you for enrolling in our course(s)! We're excited to have you with us.</p>
         <h4>🧠 Course(s) Enrolled:</h4>
         <ul>
           ${courseIds
@@ -116,23 +109,22 @@ async function sendEnrollmentEmail(toEmail, courseIds) {
             .map((id) => `<li>Course ID: <strong>${id.trim()}</strong></li>`)
             .join("")}
         </ul>
-  
-        <p>You can now access your enrolled courses in your dashboard.</p>
-        <p>If you need any assistance, feel free to contact our support team at <a href="mailto:support@notmailme.com">support@notmailme.com</a>.</p>
-  
-        <p>Happy learning!<br/>Best regards,<br/><strong>The SKillora Team</strong></p>
+        <p>Access your courses in your dashboard.</p>
+        <p>If you need help, contact <a href="mailto:support@notmailme.com">support@notmailme.com</a>.</p>
+        <p>Happy learning!<br/><strong>The SKillora Team</strong></p>
       </div>
     `,
   };
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully!");
+    console.log("Email sent successfully");
   } catch (error) {
     console.error("Error sending email:", error);
   }
 }
 
+// Allow Cross-Origin Requests
 app.use(
   cors({
     origin: [
@@ -144,8 +136,9 @@ app.use(
   })
 );
 
-
 app.use(express.json());
+
+// Routes
 app.use("/admin", authenticateToken, adminRoutes);
 app.use("/auth", authRoutes);
 app.use("/categories", categoryRoute);
@@ -160,16 +153,26 @@ app.use("/api", vediotrack);
 app.use("/api/upload", uploadRouter);
 app.use("/api/upload-image", uploadImageRouter);
 app.use("/api/pdfupload", pdfupload);
+app.use("/api", certificateRoute);
+
 app.get("/profile", authenticateToken, (req, res) => {
   res.json({ message: "This is a protected route", user: req.user });
 });
-app.use("/api", certificateRoute);
 
+// ✅ Create Checkout Session Endpoint
 app.post("/create-checkout-session", async (req, res) => {
-  const { items, userId, courseIds } = req.body; // Ensure courseIds is destructured
+  const { items, userId, courseIds } = req.body;
 
-  // Log the received items and courseIds
-  console.log("Received items:", items);
+  if (!items || !Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: "No items provided" });
+  }
+
+  if (!userId || !courseIds) {
+    return res.status(400).json({ error: "Missing userId or courseIds" });
+  }
+
+  console.log("Creating checkout session with items:", items);
+  console.log("User ID:", userId);
   console.log("Course IDs:", courseIds);
 
   try {
@@ -178,18 +181,25 @@ app.post("/create-checkout-session", async (req, res) => {
       line_items: items.map((item) => ({
         price_data: {
           currency: "inr",
-          product_data: { name: item.name },
-          unit_amount: Math.round(parseFloat(item.price) * 100), // Convert to cents
+          product_data: {
+            name: item.name,
+          },
+          unit_amount: Math.round(parseFloat(item.price) * 100), // amount in smallest currency unit
         },
         quantity: item.quantity,
       })),
       mode: "payment",
       billing_address_collection: "required",
-      success_url:
-        "https://e-learning-platform-ashy.vercel.app/register/success",
-      cancel_url: "https://e-learning-platform-ashy.vercel.app/register/cancel",
-      metadata: { userId, courseIds }, // Pass courseIds here
+      success_url: "http://localhost:3000/register/success",
+      cancel_url: "http://localhost:3000/register/cancel",
+
+      metadata: {
+        userId,
+        courseIds,
+      },
     });
+
+    console.log("Stripe session created:", session.id);
 
     res.status(200).json({ sessionId: session.id });
   } catch (error) {
@@ -198,18 +208,20 @@ app.post("/create-checkout-session", async (req, res) => {
   }
 });
 
+// Enroll User Helper
 async function enrollUserInCourse(userId, courseId) {
   try {
     const query = "INSERT INTO enrollments (user_id, course_id) VALUES (?, ?)";
     await promisePool.execute(query, [userId, courseId]);
     console.log(`User ${userId} enrolled in course ${courseId}`);
   } catch (error) {
-    console.error("Error enrolling user in course:", error);
+    console.error("Error enrolling user:", error);
     throw error;
   }
 }
 
+// Start Server
 app.listen(PORT, async () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
   await testConnection();
 });

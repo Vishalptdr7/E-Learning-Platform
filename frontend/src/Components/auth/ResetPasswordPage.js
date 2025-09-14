@@ -14,7 +14,7 @@ const ResetPasswordPage = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "https://e-learning-platform-7wzv.onrender.com/auth/reset-password",
+        "http://localhost:8080/auth/reset-password",
         {
           email,
           token,

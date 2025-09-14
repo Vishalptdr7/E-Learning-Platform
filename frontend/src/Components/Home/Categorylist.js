@@ -9,7 +9,7 @@ function HomePage() {
 
   useEffect(() => {
     axios
-      .get("https://e-learning-platform-7wzv.onrender.com/categories")
+      .get("http://localhost:8080/categories")
       .then((response) => {
         setCategories(response.data);
       })

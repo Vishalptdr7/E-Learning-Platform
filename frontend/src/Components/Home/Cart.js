@@ -37,7 +37,7 @@ const Cart = () => {
         }
 
         const response = await axios.get(
-          `https://e-learning-platform-7wzv.onrender.com/api/cart/user/${userId}`,
+          `http://localhost:8080/api/cart/user/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -80,14 +80,11 @@ const Cart = () => {
   const handleRemoveFromCart = async (cartItemId) => {
     const token = auth?.token;
     try {
-      await axios.delete(
-        `https://e-learning-platform-7wzv.onrender.com/api/cart/item/${cartItemId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`, // Pass the token in the headers
-          },
-        }
-      );
+      await axios.delete(`http://localhost:8080/api/cart/item/${cartItemId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Pass the token in the headers
+        },
+      });
       const updatedCartItems = cartItems.filter(
         (item) => item.cart_item_id !== cartItemId
       );
@@ -107,7 +104,7 @@ const Cart = () => {
     const token = auth?.token;
     try {
       await axios.post(
-        "https://e-learning-platform-7wzv.onrender.com/api/wishlist",
+        "http://localhost:8080/api/wishlist",
         {
           user_id: userId,
           course_id: courseId,
@@ -130,61 +127,57 @@ const Cart = () => {
     }
   };
 
-  const handleCheckout = async () => {
-    try {
-      const userId = auth?.user?.user_id;
+ const handleCheckout = async () => {
+   try {
+     const userId = auth?.user?.user_id;
+     if (!userId) {
+       console.error("User is not logged in.");
+       alert("Please log in to proceed with the checkout.");
+       return;
+     }
 
-      if (!userId) {
-        console.error("User is not logged in.");
-        alert("Please log in to proceed with the checkout.");
-        return;
-      }
+     const items = cartItems.map((item) => ({
+       name: item.course_title,
+       price: item.discount_price ? item.discount_price : item.price,
+       quantity: 1,
+       courseId: item.course_id,
+     }));
 
-      const items = cartItems.map((item) => ({
-        name: item.course_title,
-        price: item.discount_price ? item.discount_price : item.price,
-        quantity: 1,
-        courseId: item.course_id,
-      }));
+     const courseIds = cartItems.map((item) => item.course_id).join(",");
+     const token = auth?.token;
 
-      const courseIds = cartItems.map((item) => item.course_id).join(",");
+     const response = await axios.post(
+       "http://localhost:8080/create-checkout-session",
+       { items, userId, courseIds },
+       {
+         headers: {
+           Authorization: `Bearer ${token}`,
+         },
+       }
+     );
 
-      const token = auth?.token;
+     const { sessionId } = response.data;
+     console.log("Session ID received from backend:", sessionId);
 
-      const response = await axios.post(
-        "https://e-learning-platform-7wzv.onrender.com/create-checkout-session",
-        {
-          items: items,
-          userId: userId,
-          courseIds: courseIds,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+     const stripe = await stripePromise;
+     const { error } = await stripe.redirectToCheckout({ sessionId });
 
-      const { sessionId } = response.data;
+     if (error) {
+       console.error("Stripe checkout error object:", error);
+       alert("Error during checkout: " + error.message);
+     }
+   } catch (error) {
+     console.error("Checkout error:", error);
+     alert("Checkout error: " + error.message);
+   }
+ };
 
-      const stripe = await stripePromise;
-      const { error } = await stripe.redirectToCheckout({ sessionId });
-
-      if (error) {
-        console.error("Stripe checkout error:", error);
-        alert("Error during checkout: " + error.message);
-      }
-    } catch (error) {
-      console.error("Error during checkout:", error);
-      alert("Error during checkout: " + error.message);
-    }
-  };
 
   const fetchCartCount = async () => {
     if (auth?.user) {
       try {
         const response = await axios.get(
-          `https://e-learning-platform-7wzv.onrender.com/api/cart/count/${auth.user.user_id}`
+          `http://localhost:8080/api/cart/count/${auth.user.user_id}`
         );
         updateCartCount(response.data.count || 0); // Update cart count
       } catch (error) {

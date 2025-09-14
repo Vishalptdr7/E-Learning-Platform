@@ -47,15 +47,12 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        "https://e-learning-platform-7wzv.onrender.com/auth/register",
-        {
-          full_name,
-          email,
-          password,
-          role,
-        }
-      );
+      const response = await axios.post("http://localhost:8080/auth/register", {
+        full_name,
+        email,
+        password,
+        role,
+      });
       setStep(2);
       setSuccessMessage(
         "Registration successful! Email sent for verification."
@@ -80,7 +77,7 @@ const Register = () => {
 
     try {
       const response = await axios.post(
-        "https://e-learning-platform-7wzv.onrender.com/auth/verify-otp",
+        "http://localhost:8080/auth/verify-otp",
         {
           email,
           otp: otpValue,

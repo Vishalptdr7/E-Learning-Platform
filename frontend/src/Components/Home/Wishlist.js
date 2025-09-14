@@ -28,7 +28,7 @@ const Wishlist = () => {
         }
 
         const response = await axios.get(
-          `https://e-learning-platform-7wzv.onrender.com/api/wishlist/user/${userId}`,
+          `http://localhost:8080/api/wishlist/user/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`, // Include the token in the header
@@ -73,7 +73,7 @@ const Wishlist = () => {
       }
 
       await axios.delete(
-        `https://e-learning-platform-7wzv.onrender.com/api/wishlist/user/${wishlistItemId}`,
+        `http://localhost:8080/api/wishlist/user/${wishlistItemId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`, // Include the token in the header
@@ -104,7 +104,7 @@ const Wishlist = () => {
       }
 
       await axios.post(
-        `https://e-learning-platform-7wzv.onrender.com/api/cart`,
+        `http://localhost:8080/api/cart`,
         {
           user_id: userId,
           course_id: wishlistItem.course_id,
@@ -128,7 +128,7 @@ const Wishlist = () => {
     if (auth?.user) {
       try {
         const response = await axios.get(
-          `https://e-learning-platform-7wzv.onrender.com/api/wishlist/count/${auth.user.user_id}`
+          `http://localhost:8080/api/wishlist/count/${auth.user.user_id}`
         );
         updateWishlistCount(response.data.wishlist_count || 0); // Update cart count
       } catch (error) {

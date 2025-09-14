@@ -22,7 +22,7 @@ const StudentDashboard = () => {
         const token = auth?.token;
 
         const response = await axios.get(
-          `https://e-learning-platform-7wzv.onrender.com/api/enrollments/user/${userId}`,
+          `http://localhost:8080/api/enrollments/user/${userId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

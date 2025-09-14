@@ -19,9 +19,7 @@ const Category = () => {
     const fetchCategories = async () => {
       try {
         dispatch(setLoading());
-        const response = await axios.get(
-          "https://e-learning-platform-7wzv.onrender.com/categories"
-        );
+        const response = await axios.get("http://localhost:8080/categories");
         // Store both category names and IDs
         const categoryData = response.data.map((category) => ({
           id: category.category_id,

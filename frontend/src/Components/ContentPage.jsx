@@ -17,19 +17,19 @@ const ContentPage = () => {
       try {
         // Fetch course details
         const courseResponse = await axios.get(
-          `https://e-learning-platform-7wzv.onrender.com/api/courses/${course_id}`
+          `http://localhost:8080/api/courses/${course_id}`
         );
         setCourse(courseResponse.data);
 
         // Fetch course content
         const contentResponse = await axios.get(
-          `https://e-learning-platform-7wzv.onrender.com/api/content/${course_id}`
+          `http://localhost:8080/api/content/${course_id}`
         );
         setContent(contentResponse.data);
 
         // Fetch course reviews
         const reviewsResponse = await axios.get(
-          `https://e-learning-platform-7wzv.onrender.com/api/reviews/course/${course_id}`
+          `http://localhost:8080/api/reviews/course/${course_id}`
         );
         setReviews(reviewsResponse.data);
 

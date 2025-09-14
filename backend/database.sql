@@ -7,18 +7,11 @@ CREATE TABLE users (
     full_name VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-
-
-    ''
-    otp VARCHAR(255),
-    otp_expires DATETIME,
     is_active BOOLEAN DEFAULT FALSE,
     role ENUM('student', 'instructor', 'admin') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
-
 CREATE TABLE otp (
    id INT AUTO_INCREMENT PRIMARY KEY,
    user_id INT NOT NULL,
@@ -26,8 +19,6 @@ CREATE TABLE otp (
    otp_expiry BIGINT NOT NULL,
    FOREIGN KEY (user_id) REFERENCES users(user_id)  -- Use 'user_id' to match the column in 'users'
 );
-
-
 CREATE TABLE categories (
     category_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL,
@@ -35,8 +26,6 @@ CREATE TABLE categories (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
-
 CREATE TABLE courses (
     course_id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -58,8 +47,6 @@ CREATE TABLE courses (
     INDEX idx_instructor (instructor_id),
     INDEX idx_title (title)
 );
-
-
 CREATE TABLE course_content (
     content_id INT AUTO_INCREMENT PRIMARY KEY,
     course_id INT NOT NULL,
@@ -75,7 +62,6 @@ CREATE TABLE course_content (
     INDEX idx_course (course_id),
     INDEX idx_content_order (content_order)
 );
-
 CREATE TABLE enrollments (
     enrollment_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -85,7 +71,6 @@ CREATE TABLE enrollments (
     FOREIGN KEY (user_id) REFERENCES users(user_id),
     FOREIGN KEY (course_id) REFERENCES courses(course_id)
 );
-
 CREATE TABLE reviews (
     review_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
